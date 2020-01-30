@@ -1,6 +1,6 @@
 ## Soon will release this as a package
 ## contact me if needed taslima@utexas.edu
-## Wrutten by: Taslima Haque
+## Written by: Taslima Haque
 ## Jan 8th,2020
 
 library(ade4)
