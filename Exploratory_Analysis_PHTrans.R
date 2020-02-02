@@ -87,6 +87,84 @@ p4<-PlotPCA(dat,axis1 = 4,axis2 = 5,shape = 2,col.ind=1,ncp = 5)
 
 grid.arrange(p1,p2,p3,p4, ncol=2, nrow = 2, top= "")
 
+########## Pheno PCA
+
+############ genetic correlation of pheno
+PheDes<-read.csv("GB_Metalib_Pheno.csv",check.names = F)
+PheDes$lib_ID<-as.character(PheDes$lib_ID)
+PheDes<-PheDes[-which(PheDes$location == "Mexico"),] #Remove Mexican samples
+HAL2remove<-setdiff(unique(PheDes$genotype[which(grepl("HAL",PheDes$genotype))]),c("HAL2"))
+FIL2remove<-setdiff(unique(PheDes$genotype[which(grepl("FIL",PheDes$genotype))]),c("FIL2"))
+PheDes<-PheDes[-which(PheDes$genotype %in% c("GIL42A",HAL2remove,FIL2remove)),] # Remove outlier
+PheDes$location[which(PheDes$location =="Coastal")] <-"Filipes"
+PheDes$Population<-ifelse( PheDes$location %in% c("CenTex","West"),"HAL_I",ifelse(PheDes$location %in% c("Sym","TexMex"),"HAL_II","FIL"))
+PheDes$Population<-factor(PheDes$Population,levels = c("FIL","HAL_I","HAL_II"))
+PheDes<-PheDes[,c(2,17,4,7:15)]
+
+#colnames(PheMat)<-c("PLOT_GL", "BIOMASS",  "TC",  "AREA","SLA", "FRESH", "DRY","RWC",  "OP", "MDWP")
+
+
+### Change in to Numeric value
+for (i in c(4:12)) {
+  PheDes[,i]<-as.numeric(as.character(PheDes[,i]))
+}
+
+### Mask any RWC > 100 as NA
+PheDes$RWC[which(PheDes$RWC >100)]<-NA
+
+#write.csv(PheDes,"GB_Meta_647_withPhe.csv",row.names = F)
+
+GenCorPhe <- as.tibble(PheDes)  %>% group_by(genotype,SITE,Population) %>% summarise_all(funs(mean))
+
+PCAPhe<-GenCorPhe %>% ungroup() %>%  select(SITE,Population, BIOMASS,TC,AREA,SLA,FRESH,DRY,RWC,OP,MDWP) 
+PCAPhe<-na.omit(PCAPhe)
+
+### Distribution of pheno for two sites
+PCAPhe %>%
+  #keep(is.numeric) %>%                     # Keep only numeric columns
+  #group_by(SITE) %>% 
+  gather(key, value,BIOMASS,TC,AREA,SLA,FRESH,DRY,RWC,OP,MDWP) %>%                             # Convert to key-value pairs
+  ggplot(aes(value)) +                     # Plot the values
+  facet_wrap(~ key, scales = "free") +   # In separate panels
+  geom_density(aes(colour=SITE,fill=SITE),alpha=0.25) 
+
+### TAKE HOME MSG: AREA, DRY FREASH almost have the same distributions: may be they all are leaf traits therefore have the same pattern
+### MDWP and OP totally bimodal if we consider total population; this bimodal pattern is for SITE
+### sd of RWC of KINGS are higher that BFL therefore have very different disribution and not has a clear bimodal separartion
+
+PCAPhe<-na.omit(PCAPhe)
+
+####### RUN PCA on genetically identical pooled samples
+library(ade4)
+library(factoextra)
+library(magrittr)
+library(gridExtra)
+
+
+res.pca <- dudi.pca(PCAPhe[,-c(1:2)],
+                    scannf = FALSE,   # Hide scree plot
+                    nf = 5 ,center = T,scale = T           # Number of components kept in the results
+)
+
+PCAPhe$Group<-paste(PCAPhe$Population,PCAPhe$SITE,sep = "_")
+fviz_pca_biplot(res.pca, label ="var",axes = c(1,2),
+                geom.var = c("arrow","text"),
+                geom.ind = "point",
+                col.var = "orangered2",
+                pointshape = 21, 
+                pointsize = 2.5,
+                invisible = "quali",
+                palette= c( "#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"),
+                #palette = colorRampPalette(brewer.pal(name="Paired", n = 16))(16),
+                #palette = c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", 
+                #            "#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00"),
+                fill.ind=PCAPhe$Group,
+                legend.title = list(fill = "Population:Site"),
+                #select.var = list(contrib = 10),
+                repel = TRUE,
+                addEllipses=F, ellipse.level=0.75)+labs(title="PCA on Axis 1 and 2")+
+  theme(plot.title = element_text(hjust = 0.5))  
+
 ########### COV
 
 PheDes<-read.csv("GB_Metalib_Pheno.csv",check.names = F)
