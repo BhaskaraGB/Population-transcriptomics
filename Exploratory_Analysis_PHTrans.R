@@ -126,7 +126,25 @@ PCAPhe %>%
   gather(key, value,BIOMASS,TC,AREA,SLA,FRESH,DRY,RWC,OP,MDWP) %>%                             # Convert to key-value pairs
   ggplot(aes(value)) +                     # Plot the values
   facet_wrap(~ key, scales = "free") +   # In separate panels
-  geom_density(aes(colour=SITE,fill=SITE),alpha=0.25) 
+  geom_density(aes(colour=SITE,fill=SITE),alpha=0.4) +
+  #geom_line(aes(colour=SITE,fill=SITE),stat = "density",alpha=0.75) +
+  scale_fill_manual(values = c("orange2","dodgerblue"))+
+  scale_color_manual(values = c("orange3","navyblue"))+
+  labs(x="Phenotype",y="Density")+
+  theme_bw(base_size = 14)+
+  theme(plot.title = element_text(hjust = 0.5,size=14, face = "bold"),
+        legend.title = element_text(size=12, face="bold"),
+        legend.text = element_text(size=12),
+        axis.title = element_text(size=12,face="bold"),
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        axis.text=element_text(size=12,vjust=1),
+        strip.background = element_rect(fill = "transparent", color = NA),
+        strip.text = element_text(size=12,face = "bold")
+        #axis.ticks.x = element_blank()
+  )
 
 ### TAKE HOME MSG: AREA, DRY FREASH almost have the same distributions: may be they all are leaf traits therefore have the same pattern
 ### MDWP and OP totally bimodal if we consider total population; this bimodal pattern is for SITE
