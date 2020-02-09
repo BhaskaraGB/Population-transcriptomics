@@ -1,4 +1,4 @@
-setwd("/home/taslima/data/JuengerLab/ALL_RNASeq/Bhashkar_RNASeq/V4")
+setwd("/home/taslima/data/JuengerLab/ALL_RNASeq/Bhashkar_RNASeq/V5")
 
 rm(list=ls())
 
@@ -12,25 +12,11 @@ library(xlsx)
 
 register(MulticoreParam(workers=24))
 
-Ortho<-read.csv("tableS3_orthologDatabase.csv",check.names = F)
-dim(Ortho)
-Ortho<-na.omit(Ortho)
-dim(Ortho)
-Ortho$ID<-sapply(1:dim(Ortho)[1], function(x) paste( c("Ortho",sprintf("%06d", x)),collapse = "_"))
+Design<-read.csv("PHTrans_Final_Meta.csv",row.names = 6)
+dat<-read.table("PHTrans_Count_HALREF.tab",header = T,stringsAsFactors = F,check.names = F)
 
-datH<-read.csv("Counts_HAL_rename.csv",check.names = F,row.names =1)
-colnames(datH)<-gsub( "_-[0-9][0-9]|--[0-9][0-9]|_-[0-9]","",colnames(datH))
-rownames(datH)<-gsub(".v2.1","",rownames(datH)[1:nrow(datH)])
-datH<-datH[Ortho$HAL2,]
-#datH<-datH[c(1:200),]
-
-Design<-read.csv("PH_trans_Meta_623.csv",row.names = 6,check.names = F,na.strings = "NA")
-
-ID<-intersect(rownames(Design), colnames(datH))
-dat<-datH[,ID]
-Design<-Design[which(rownames(Design) %in% ID),]
 dat<-dat[,rownames(Design)]
-dat<-dat[-which(as.vector(rowMeans(dat,na.rm = F)) <1),] # Remove very low abundant gene from count matrix
+dat<-dat[-which(as.vector(rowMeans(dat,na.rm = F)) <1),]  # Remove very low abundant gene from count matrix
 
 dds <- DESeqDataSetFromMatrix(countData = dat,
                               colData = Design,
