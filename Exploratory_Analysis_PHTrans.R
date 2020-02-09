@@ -144,13 +144,13 @@ axis<-c(axis1,axis2)
 seldat<-Expdat[,-c(shape,col.ind)]
 res.pca <- PCA(seldat, graph = FALSE,ncp = 5)
 perVar <- res.pca$eig[,2]
-ind <- data.frame(res.pca$ind$coord[, axis, drop = FALSE])
-var<-as.data.frame(res.pca$var$coord)
+ind2 <- data.frame(res.pca$ind$coord[, axis, drop = FALSE])
+var2<-as.data.frame(res.pca$var$coord)
 
-ind$shape<-as.vector(Expdat[,shape])
-ind$col<-as.vector(Expdat[,col.ind])
-xlab=paste("Axis",axis1," (",round(as.numeric(perVar[axis1]),2),"%)",sep = "")
-ylab=paste("Axis",axis2," (",round(as.numeric(perVar[axis2]),2),"%)",sep = "")
+ind2$shape<-as.vector(Expdat[,shape])
+ind2$col<-as.vector(Expdat[,col.ind])
+xlab2=paste("Axis",axis1," (",round(as.numeric(perVar[axis1]),2),"%)",sep = "")
+ylab2=paste("Axis",axis2," (",round(as.numeric(perVar[axis2]),2),"%)",sep = "")
 
 floorOrceiling<-function(x) {
   if (x>= 0) {y<-ceiling(x); return(y)} else {
@@ -174,7 +174,7 @@ MinMax<-function (ind) {
   return(lims) 
 }
 
-lims<-MinMax(ind)
+lims<-MinMax(ind2)
 
 ## Need to work on shape a bit
 shapelist<-c(16,17,18,19,20)
@@ -186,9 +186,9 @@ collist<- c("#000000", "#E69F00", "#009E73", "#0072B2", "#D55E00", "#CC79A7")
 ######### Plot individulas
 title<-paste("PCA on Axis ",axis1, " and ",axis2,sep = "")
 
-p2<-ggplot(ind)+geom_point(aes(x=ind[,1],y=ind[,2],shape=ind$shape,colour=ind$col),size=3, alpha=0.75)+
+p2<-ggplot(ind2)+geom_point(aes(x=ind2[,1],y=ind2[,2],shape=ind2$shape,colour=ind2$col),size=3, alpha=0.75)+
   geom_hline(yintercept = 0,linetype=2)+geom_vline(xintercept = 0,linetype=2)+
-  theme_bw() + labs(x =xlab, y=ylab,title = title,shape=as.name(colnames(Expdat)[shape]),colour=as.name(colnames(Expdat)[col.ind]))+ 
+  theme_bw() + labs(x =xlab2, y=ylab2,title = title,shape=as.name(colnames(Expdat)[shape]),colour=as.name(colnames(Expdat)[col.ind]))+ 
   scale_shape_manual(values=shapelist)+
   scale_color_manual(values=collist)+
   scale_x_continuous(limits = lims[1:2])+
