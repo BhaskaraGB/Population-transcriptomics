@@ -10,7 +10,7 @@ library("vsn")
 library(edgeR)
 library(xlsx)
 library(tidyverse)
-library(PCA)
+library(FactoMineR)
 
 register(MulticoreParam(workers=8))
 
