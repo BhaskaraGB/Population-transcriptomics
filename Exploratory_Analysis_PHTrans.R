@@ -211,6 +211,25 @@ p2<-ggplot(ind2)+geom_point(aes(x=ind2[,1],y=ind2[,2],shape=ind2$shape,colour=in
 
 grid.arrange(p1,p2, ncol=2, nrow = 1, top= "")
 
+####### Size factor distribution
+
+SF<-as.data.frame(sizeFactors(dds))
+SF$lib_ID<-rownames(SF)
+colnames(SF)[1]<-"sizeFactors"
+PheSF<-PheDes[,c(2,13,15)]
+SFdat<-merge(PheSF,SF,by="lib_ID")
+ggplot(dat, aes(sizeFactors))+geom_density(aes(colour=Group,fill=Group),alpha=0.4)
+
+ggplot() + 
+  geom_line( data=SFdat, mapping=aes(x=sizeFactors,color=Group,linetype=SITE),stat="density",size=0.5,alpha=1,show.legend  = T)+
+  geom_line( data = SFdat,mapping = aes(x=sizeFactors,linetype=SITE),stat="density",size=0.8,alpha=0.75,show.legend = F)+
+  theme_classic(base_size = 14)+labs(x="Size Factors of libraries")+
+  scale_color_manual(values = c("#E69F00", "#56B4E9", "#009E73","#F0E442", "#0072B2", "#D55E00", "#CC79A7"),
+                     name="GroupXSITE",
+                     breaks=levels(factor(SFdat$Group)),
+                     labels= levels(factor(SFdat$Group)))
+
+
 ########### COV
 head(PheExp)[c(1:5),c(1:20)]
 PheExp2<-PheExp[,-c(1,2,4:13)]
