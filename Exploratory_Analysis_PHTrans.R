@@ -84,6 +84,14 @@ floorOrceiling<-function(x) {
   }
 }
 
+getRound<-function(x){
+  breaks<-c()
+  for (i in 1:length(x)) {
+    breaks<-append(breaks, (floorOrceiling(x[i]/10)*10))
+  }
+  return(breaks)
+}
+
 MinMax<-function (ind) {
   lims<-c()
   for (i in 1:2) {
@@ -97,16 +105,20 @@ MinMax<-function (ind) {
     }
     lims<-append(lims,c(vmin,vmax))
   }
+  lims<-getRound(lims)
   return(lims) 
 }
 
 lims<-MinMax(ind)
 
+
+
+
 ## Need to work on shape a bit
 shapelist<-c(16,17,18,19,20)
 
 ## And color too
-collist<- c("#000000", "#E69F00", "#009E73", "#0072B2", "#D55E00", "#CC79A7")
+collist<- c("#CB4335", "#566573", "#3949AB")
 #collist<- c( "#E69F00", "#009E73", "#0072B2", "#D55E00", "#CC79A7")
 #collist<- c( "#E69F00", "#009E73",  "#CC79A7")
 ######### Plot individulas
@@ -117,8 +129,8 @@ p1<-ggplot(ind)+geom_point(aes(x=ind[,1],y=ind[,2],shape=ind$shape,colour=ind$co
     theme_bw() + labs(x =xlab, y=ylab,title = title,shape=as.name(colnames(Expdat)[shape]),colour=as.name(colnames(Expdat)[col.ind]))+ 
     scale_shape_manual(values=shapelist)+
     scale_color_manual(values=collist)+
-    scale_x_continuous(limits = lims[1:2])+
-    scale_y_continuous(limits = lims[3:4])+
+    scale_x_continuous(limits = lims[1:2],breaks = seq(lims[1],lims[2],by = 10))+
+    scale_y_continuous(limits = lims[3:4],breaks = seq(lims[3],lims[4],by = 10))+
     theme(plot.title = element_text(hjust = 0.5,size=14, face = "bold"),
           legend.title = element_text(size=10, face="bold"),
           legend.text = element_text(size=10),
@@ -126,7 +138,7 @@ p1<-ggplot(ind)+geom_point(aes(x=ind[,1],y=ind[,2],shape=ind$shape,colour=ind$co
           axis.title = element_text(size=12,face="bold"),
           panel.border = element_blank(), 
           panel.grid.major = element_blank(),
-          #panel.grid.minor = element_blank(), 
+          panel.grid.minor = element_blank(), 
           axis.line = element_line(colour = "black"),
           axis.text=element_text(size=12,vjust=1),
           plot.margin = margin(0.25, 5, 0.25, 0.25, "cm")
@@ -158,6 +170,16 @@ floorOrceiling<-function(x) {
   }
 }
 
+
+getRound<-function(x){
+  breaks<-c()
+  for (i in 1:length(x)) {
+    breaks<-append(breaks, (floorOrceiling(x[i]/10)*10))
+  }
+  return(breaks)
+}
+
+
 MinMax<-function (ind) {
   lims<-c()
   for (i in 1:2) {
@@ -171,6 +193,7 @@ MinMax<-function (ind) {
     }
     lims<-append(lims,c(vmin,vmax))
   }
+  lims<-getRound(lims)
   return(lims) 
 }
 
@@ -180,7 +203,7 @@ lims<-MinMax(ind2)
 shapelist<-c(16,17,18,19,20)
 
 ## And color too
-collist<- c("#000000", "#E69F00", "#009E73", "#0072B2", "#D55E00", "#CC79A7")
+collist<- c("#CB4335", "#566573", "#3949AB")
 #collist<- c( "#E69F00", "#009E73", "#0072B2", "#D55E00", "#CC79A7")
 #collist<- c( "#E69F00", "#009E73",  "#CC79A7")
 ######### Plot individulas
@@ -191,8 +214,8 @@ p2<-ggplot(ind2)+geom_point(aes(x=ind2[,1],y=ind2[,2],shape=ind2$shape,colour=in
   theme_bw() + labs(x =xlab2, y=ylab2,title = title,shape=as.name(colnames(Expdat)[shape]),colour=as.name(colnames(Expdat)[col.ind]))+ 
   scale_shape_manual(values=shapelist)+
   scale_color_manual(values=collist)+
-  scale_x_continuous(limits = lims[1:2])+
-  scale_y_continuous(limits = lims[3:4])+
+  scale_x_continuous(limits = lims[1:2],breaks = seq(lims[1],lims[2],by = 10))+
+  scale_y_continuous(limits = lims[3:4],breaks = seq(lims[3],lims[4],by = 10))+
   theme(plot.title = element_text(hjust = 0.5,size=14, face = "bold"),
         legend.title = element_text(size=10, face="bold"),
         legend.text = element_text(size=10),
@@ -200,7 +223,7 @@ p2<-ggplot(ind2)+geom_point(aes(x=ind2[,1],y=ind2[,2],shape=ind2$shape,colour=in
         axis.title = element_text(size=12,face="bold"),
         panel.border = element_blank(), 
         panel.grid.major = element_blank(),
-        #panel.grid.minor = element_blank(), 
+        panel.grid.minor = element_blank(), 
         axis.line = element_line(colour = "black"),
         axis.text=element_text(size=12,vjust=1),
         plot.margin = margin(0.25, 5, 0.25, 0.25, "cm")
