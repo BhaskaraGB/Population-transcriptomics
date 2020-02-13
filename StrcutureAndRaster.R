@@ -66,6 +66,11 @@ prec2<-as.data.frame(prec,xy=T)
 crs(prec)
 prec3<-prec2[-which(is.na(prec2$layer)),]
 
+mapdata <- read.csv("state-medal-count.csv", header=TRUE, stringsAsFactors=FALSE)
+states <- map_data("state")
+substates<-states[which(states$region %in% c("texas","new mexico","arizona","oklahoma")),]
+
+
 p<-ggplot() +
   geom_point(data = prec3 , aes(x = x, y = y, color = layer),alpha=0.65) +
   scale_color_gradientn(colours =  terrain.colors(12))+
