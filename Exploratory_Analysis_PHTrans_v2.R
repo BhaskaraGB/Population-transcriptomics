@@ -246,9 +246,9 @@ SF$lib_ID<-rownames(SF)
 colnames(SF)[1]<-"sizeFactors"
 PheSF<-PheDes[,c(2,13,15)]
 SFdat<-merge(PheSF,SF,by="lib_ID")
-ggplot(dat, aes(sizeFactors))+geom_density(aes(colour=Group,fill=Group),alpha=0.4)
+#ggplot(dat, aes(sizeFactors))+geom_density(aes(colour=Group,fill=Group),alpha=0.4)
 
-ggplot() + 
+LibS<-ggplot() + 
   geom_line( data=SFdat, mapping=aes(x=sizeFactors,color=Group,linetype=SITE),stat="density",size=0.5,alpha=1,show.legend  = T)+
   geom_line( data = SFdat,mapping = aes(x=sizeFactors,linetype=SITE),stat="density",size=0.8,alpha=0.75,show.legend = F)+
   theme_classic(base_size = 14)+labs(x="Size Factors of libraries")+
@@ -256,6 +256,10 @@ ggplot() +
                      name="GroupXSITE",
                      breaks=levels(factor(SFdat$Group)),
                      labels= levels(factor(SFdat$Group)))
+
+pdf("LibSizePop.pdf",width=14,height=9)
+LibS
+dev.off()
 
 
 ########### COV
@@ -273,7 +277,7 @@ df$SITE<-rep("BFL",dim(df)[1])
 datCVSite<-PheExp2 %>% group_by(SITE) %>% summarise_at(colnames(PheExp2)[-(1:3)], CV)
 dfSite<-datCVSite %>% gather(GeneName, CV, colnames(datCV)[-1])
 
-ggplot() + 
+CVPlot<-ggplot() + 
   geom_line( data=df, mapping=aes(x=CV,color=Group,linetype=SITE),stat="density",size=0.5,alpha=1,show.legend  = T)+
   geom_line( data = dfSite,mapping = aes(x=CV,linetype=SITE),stat="density",size=0.8,alpha=0.75,show.legend = F)+
   theme_classic(base_size = 14)+labs(x="Coefficient of Variantion (CV)")+
@@ -285,36 +289,39 @@ ggplot() +
                      breaks=levels(factor(df$Group)),
                      labels= levels(factor(df$Group)))
 
+pdf("COV.pdf",width=14,height=9)
+CVPlot
+dev.off()
 
 ########## Pheno PCA
 
 ############ genetic correlation of pheno
-head(PheDes)
-PheDes<-PheDes[,c(1,2,14,4:12)]
+head(Design)
+Phe<-Design[,c(2:4,6:15)]
 
 #colnames(PheMat)<-c("PLOT_GL", "BIOMASS",  "TC",  "AREA","SLA", "FRESH", "DRY","RWC",  "OP", "MDWP")
 
 
 ### Change in to Numeric value
-for (i in c(4:12)) {
+for (i in c(4:11)) {
   PheDes[,i]<-as.numeric(as.character(PheDes[,i]))
 }
 
 ### Mask any RWC > 100 as NA
-PheDes$RWC[which(PheDes$RWC >100)]<-NA
+Phe$RWC[which(Phe$RWC >100)]<-NA
 
 #write.csv(PheDes,"GB_Meta_647_withPhe.csv",row.names = F)
 
-GenCorPhe <- as.tibble(PheDes)  %>% group_by(genotype,SITE,Population) %>% summarise_all(funs(mean))
+GenCorPhe <- as.tibble(Phe)  %>% group_by(genotype,SITE,Population) %>% summarise_all(funs(mean))
 
-PCAPhe<-GenCorPhe %>% ungroup() %>%  select(SITE,Population, BIOMASS,TC,AREA,SLA,FRESH,DRY,RWC,OP,MDWP) 
+PCAPhe<-GenCorPhe %>% ungroup() %>%  dplyr::select(SITE,Population, BIOMASS,AREA,SLA,FRESH,DRY,RWC,OP,MDWP) 
 PCAPhe<-na.omit(PCAPhe)
 
 ### Distribution of pheno for two sites
 PCAPhe %>%
   #keep(is.numeric) %>%                     # Keep only numeric columns
   #group_by(SITE) %>% 
-  gather(key, value,BIOMASS,TC,AREA,SLA,FRESH,DRY,RWC,OP,MDWP) %>%                             # Convert to key-value pairs
+  gather(key, value,BIOMASS,AREA,SLA,FRESH,DRY,RWC,OP,MDWP) %>%                             # Convert to key-value pairs
   ggplot(aes(value)) +                     # Plot the values
   facet_wrap(~ key, scales = "free") +   # In separate panels
   geom_density(aes(colour=SITE,fill=SITE),alpha=0.4) +
@@ -375,3 +382,44 @@ fviz_pca_biplot(res.pca, label ="var",axes = c(1,2),
                 addEllipses=F, ellipse.level=0.75)+labs(title="PCA on Axis 1 and 2")+
   theme(plot.title = element_text(hjust = 0.5))  
 
+########## Reaction Norm
+
+GenCorPhe <- as.tibble(Phe)  %>% group_by(genotype,SITE,Population) %>% summarise_all(funs(mean),na.rm=TRUE)
+
+NPhe<-GenCorPhe %>% ungroup() %>%  dplyr::select(genotype,SITE,Population, BIOMASS,AREA,SLA,FRESH,DRY,RWC,OP,MDWP) 
+
+PopMean<-NPhe %>% dplyr::select(SITE,Population, BIOMASS,AREA,SLA,FRESH,DRY,RWC,OP,MDWP)   %>%
+  group_by(SITE,Population) %>% summarise_all(funs(mean),na.rm=TRUE) %>% 
+  gather(Trait, Mean,BIOMASS,AREA,SLA,FRESH,DRY,RWC,OP,MDWP)
+
+PopSD<-NPhe %>% dplyr::select(SITE,Population, BIOMASS,AREA,SLA,FRESH,DRY,RWC,OP,MDWP)   %>%
+  group_by(SITE,Population) %>% summarise_all(funs(sd),na.rm=TRUE) %>% 
+  gather(Trait, SD,BIOMASS,AREA,SLA,FRESH,DRY,RWC,OP,MDWP)
+
+Pop<-left_join(PopMean,PopSD) %>% mutate(low=Mean-SD,high=Mean+SD)
+
+NPhe %>%
+  gather(Trait,Mean,BIOMASS,AREA,SLA,FRESH,DRY,RWC,OP,MDWP) %>%  
+  ggplot(aes(x=SITE,y=Mean)) +                     # Plot the values
+  facet_wrap(~ Trait, scales = "free") +
+  geom_point(aes(color=Population),alpha=0.65,size=0.3)+
+  geom_line(aes(group=genotype,color=Population),alpha=0.35,linetype=3,size=0.75)+
+  geom_point(data = PopMean,aes(color=Population),alpha=1,size=1.5,show.legend = T)+
+  geom_line(data=PopMean,aes(group=Population,color=Population),alpha=0.75,linetype=1,size=1.5,show.legend = F)+
+  geom_linerange(data=Pop,aes(ymin=low,ymax=high,color=Population),alpha=0.75,linetype=1,size=1,show.legend = F)+
+  scale_color_manual(values = c("#A93226", "#FFC300","#0D0373","#A93226", "#FFC300","#0D0373"))+
+  labs(x="Phenotype",y="Density")+
+  theme_bw(base_size = 14)+
+  theme(plot.title = element_text(hjust = 0.5,size=14, face = "bold"),
+        legend.title = element_text(size=12, face="bold"),
+        legend.text = element_text(size=12),
+        axis.title = element_text(size=12,face="bold"),
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        axis.text=element_text(size=12,vjust=1),
+        strip.background = element_rect(fill = "transparent", color = NA),
+        strip.text = element_text(size=12,face = "bold")
+        #axis.ticks.x = element_blank()
+  )
