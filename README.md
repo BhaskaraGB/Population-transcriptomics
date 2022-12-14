@@ -20,4 +20,5 @@ ParentDirectory:
 ##### 1. DEG_PHTrans_all_contrasts_Global.R : Factorial DEG analysis
 ##### 2. Result_DEG_and_GO_Enrichment_Global.R: Parse DEG results and GO
 #####    Enrichment analysis
-#####
+##### 3. QPC_PHTRANS_RecombSites.R : Outlier test for selection on gene
+#####    expression by QPC method
