@@ -271,7 +271,7 @@ write.csv(GENEAVGtabAnnot,"Results/QPC_Expression_Divergent_AVG_v9_RE.csv",
 
 
 
-######### Plt Specific gene
+######### Plot Specific gene
 GenMat<-GenMatAve
 bluptable<-bluptableAvg
 PCMat<-as.data.frame(eigF$vectors[,c(1:pcm)])
