@@ -14,9 +14,9 @@ register(MulticoreParam(workers=6))
 
 
 # Read Design file
-Design<-read.csv("Data/PHTrans_Final_Meta_548lib_FullStat.csv",row.names = 1)
+Design<-read.csv("Data/PHTrans_Final_Meta_508lib_FullStat.csv",row.names = 1)
 #REad count matrix
-dat<-read.table("Data/PHTrans_Count_HALREF_ALL.tab",header = T,stringsAsFactors = F,check.names = F)
+dat<-read.table("Data/PHTrans_Count_508_HALREF_ALL.tab",header = T,stringsAsFactors = F,check.names = F)
 
 # Filter low counts
 dat<-dat[,rownames(Design)]

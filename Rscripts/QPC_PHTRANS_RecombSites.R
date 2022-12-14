@@ -10,8 +10,8 @@ library(ggplot2)
 
 ############ Get Count Data and make mean center count
 
-Design<-read.csv("Data/PHTrans_Final_Meta_548lib_FullStat.csv",row.names = 1)
-dat<-read.table("Data/PHTrans_Count_HALREF_ALL.tab",header = T,stringsAsFactors = F,check.names = F)
+Design<-read.csv("Data/PHTrans_Final_Meta_508lib_FullStat.csv",row.names = 1)
+dat<-read.table("Data/PHTrans_Count_508_HALREF_ALL.tab",header = T,stringsAsFactors = F,check.names = F)
 
 dat<-dat[,rownames(Design)]
 dat<-dat[-which(as.vector(rowMeans(dat,na.rm = F)) <1),]
@@ -27,7 +27,6 @@ dat<-dat[which(rownames(dat) %in% RE$GeneID ),]
 
 #### Now rename genotype as 3-letter code
 # Design$genotype<-substr(Design$genotype,1,3)
-Design<-Design[-which(Design$genotype %in% c("COR","COL","OPV", "BUR","KEN","LME","SLS","SMF")),]
 Design<-Design[,c('SITE','genotype','Population')]
 Design$LIBID<-rownames(Design)
 
