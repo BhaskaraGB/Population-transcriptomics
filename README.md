@@ -5,7 +5,7 @@
 
 ##### Authors : Bhaskara Govinal Badiger & Taslima Haque                                                                                                 
 ##### Last modified: 12/14/2022                                                                                        
-##### Please send your query to the authors at: bhaskar@utmail.utexas.edu or taslima@utexas.edu
+##### Please send your query to the authors at: bhaskar@utexas.edu or taslima@utexas.edu
 
 ##### Directory structure:
 ```
