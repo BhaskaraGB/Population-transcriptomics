@@ -1,6 +1,7 @@
 ### PHtrans
 
-##### Title: "Gene expression divergence in *Panicum hallii*"
+##### Title: "Evolutionary Analyses of Gene Expression Divergence in *Panicum hallii*: Exploring Constitutive and Plastic Responses Using Reciprocal Transplants"
+https://academic.oup.com/mbe/article/40/10/msad210/7279049
 
 
 ##### Authors : Bhaskara Govinal Badiger & Taslima Haque                                                                                                 
