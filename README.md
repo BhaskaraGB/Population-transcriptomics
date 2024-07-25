@@ -1,6 +1,6 @@
-### PHtrans
 
-##### Title: "Evolutionary Analyses of Gene Expression Divergence in *Panicum hallii*: Exploring Constitutive and Plastic Responses Using Reciprocal Transplants"
+
+## *Evolutionary Analyses of Gene Expression Divergence in *Panicum hallii*: Exploring Constitutive and Plastic Responses Using Reciprocal Transplants*
 https://academic.oup.com/mbe/article/40/10/msad210/7279049
 
 
